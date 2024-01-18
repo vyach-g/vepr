@@ -48,11 +48,28 @@ export class UsersService {
     }
   }
 
+  async findOneByEmail(email: string) {
+    try {
+      const user = await this.prisma.user.findUnique({ where: { email } });
+
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+      return user;
+    } catch (error) {
+      console.log(error);
+      throw new BadRequestException('Failed to find users');
+    }
+  }
+
   async update(id: UserEnitity['id'], updateUserDto: UpdateUserDto) {
     try {
       return await this.prisma.user.update({
         where: { id },
-        data: updateUserDto,
+        data: {
+          name: updateUserDto.name,
+          email: updateUserDto.email,
+        },
       });
     } catch (error) {
       console.log(error);

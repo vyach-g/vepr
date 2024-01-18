@@ -3,6 +3,7 @@ import { UsersService } from './users.service';
 import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
 // import { UserEnitity } from './entities/user.entity';
 import { ApiTags } from '@nestjs/swagger';
+import { UserId } from './entities/user.entity';
 // import { CreateUserDto } from './dto/create-user.dto';
 // import { UpdateUserDto } from './dto/update-user.dto';
 
@@ -22,17 +23,17 @@ export class UsersController {
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
+  findOne(@Param('id', ParseIntPipe) id: UserId) {
     return this.usersService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: number, @Body() updateUserDto: UpdateUserDto) {
+  update(@Param('id', ParseIntPipe) id: UserId, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(id, updateUserDto);
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number) {
+  remove(@Param('id', ParseIntPipe) id: UserId) {
     return this.usersService.remove(id);
   }
 }

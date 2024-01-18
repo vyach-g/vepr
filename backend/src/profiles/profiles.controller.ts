@@ -1,9 +1,11 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { ProfilesService } from './profiles.service';
 import { Prisma } from '@prisma/client';
+import { ApiTags } from '@nestjs/swagger';
 // import { CreateProfileDto } from './dto/create-profile.dto';
 // import { UpdateProfileDto } from './dto/update-profile.dto';
 
+@ApiTags('Profiles')
 @Controller('profiles')
 export class ProfilesController {
   constructor(private readonly profilesService: ProfilesService) {}
