@@ -1,10 +1,13 @@
+import * as bcrypt from 'bcrypt';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 // import { CreateUserDto } from './dto/create-user.dto';
 // import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma.service';
 import { Prisma, User } from '@prisma/client';
 import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
-import { UserEnitity } from './entities/user.entity';
+import { UserId } from './entities/user.entity';
+
+export const HASH_ROUNDS = 10;
 
 @Injectable()
 export class UsersService {
@@ -13,8 +16,10 @@ export class UsersService {
   async create(createUserDto: CreateUserDto): Promise<User> {
     console.log(createUserDto);
 
+    const hashedPassword = await bcrypt.hash(createUserDto.password, HASH_ROUNDS);
+
     try {
-      const tempUser = await this.prisma.user.create({ data: createUserDto });
+      const tempUser = await this.prisma.user.create({ data: { ...createUserDto, password: hashedPassword } });
       console.log(tempUser);
       return tempUser;
     } catch (error) {
@@ -34,7 +39,7 @@ export class UsersService {
     }
   }
 
-  async findOne(id: UserEnitity['id']) {
+  async findOne(id: UserId) {
     try {
       const user = await this.prisma.user.findUnique({ where: { id } });
 
@@ -62,7 +67,7 @@ export class UsersService {
     }
   }
 
-  async update(id: UserEnitity['id'], updateUserDto: UpdateUserDto) {
+  async update(id: UserId, updateUserDto: UpdateUserDto) {
     try {
       return await this.prisma.user.update({
         where: { id },
@@ -77,7 +82,17 @@ export class UsersService {
     }
   }
 
-  async remove(id: UserEnitity['id']) {
+  async updatePassword(id: UserId, password: string) {
+    try {
+      const hashedPassword = await bcrypt.hash(password, HASH_ROUNDS);
+      return await this.prisma.user.update({ where: { id }, data: { password: hashedPassword } });
+    } catch (error) {
+      console.log(error);
+      throw new BadRequestException('Failed to update user password');
+    }
+  }
+
+  async remove(id: UserId) {
     try {
       return await this.prisma.user.delete({ where: { id } });
     } catch (error) {

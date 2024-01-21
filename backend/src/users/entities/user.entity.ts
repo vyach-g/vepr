@@ -1,10 +1,7 @@
 import { User } from '@prisma/client';
+import { UserRole } from 'src/roles/roles.types';
 
 export type UserId = number;
-export enum UserRole {
-  Admin = 'admin',
-  User = 'user',
-}
 
 export class UserEnitity implements User {
   id: UserId;

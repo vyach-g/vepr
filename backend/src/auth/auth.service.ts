@@ -1,3 +1,4 @@
+import * as bcrypt from 'bcrypt';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 
@@ -8,7 +9,9 @@ export class AuthService {
   async signIn(email: string, password: string) {
     const user = await this.usersService.findOneByEmail(email);
 
-    if (user.password !== password) {
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordCorrect) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
